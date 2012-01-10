@@ -1254,8 +1254,7 @@ class MercurialBuildFactory(MozillaBuildFactory):
         cmd = ['/bin/bash', '-c', 
                 WithProperties('%(toolsdir)s/buildfarm/utils/wget_unpack.sh ' +
                                baseUrl + ' logs.tar.gz '+
-                               'malloc.log sdleak.tree')
-            )]
+                               'malloc.log sdleak.tree') ]
         self.addStep(RetryingShellCommand(
             name='get_unpack_logs',
             env=self.env,
@@ -1366,8 +1365,7 @@ class MercurialBuildFactory(MozillaBuildFactory):
                         '%s' % self.stageUsername +
                         '%s' % self.stageSshKey +
                         '%s:%s/%s' % (self.stageServer, self.stageBasePath,
-                        self.logUploadDir))
-                    )]
+                        self.logUploadDir)) ]
             self.addStep(RetryingShellCommand(
                 name='pack_upload_logs',
                 env=self.env,
@@ -1666,8 +1664,7 @@ class MercurialBuildFactory(MozillaBuildFactory):
         cmd = ['/bin/bash', '-c', 
                 WithProperties('%(toolsdir)s/buildfarm/utils/wget_unpack.sh ' +
                                self.logBaseUrl + ' codesize-auto.tar.gz '+
-                               'codesize-auto.log')
-            )]
+                               'codesize-auto.log') ]
         self.addStep(RetryingShellCommand(
             name='get_unpack_codesize_logs',
             env=self.env,
@@ -1718,8 +1715,7 @@ class MercurialBuildFactory(MozillaBuildFactory):
                     '%s' % self.stageUsername +
                     '%s' % self.stageSshKey +
                     '%s:%s/%s' % (self.stageServer, self.stageBasePath,
-                        self.logUploadDir))
-                    )]
+                        self.logUploadDir)) ]
         self.addStep(RetryingShellCommand(
             name='pack_upload_logs',
             command=cmd,

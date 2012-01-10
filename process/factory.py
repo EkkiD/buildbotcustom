@@ -1249,20 +1249,34 @@ class MercurialBuildFactory(MozillaBuildFactory):
           warnOnFailure=True,
           haltOnFailure=True
           ))
+
+        # Download and unpack the old versions of malloc.log and sdleak.tree
+        cmd = ['/bin/bash', '-c', 
+                WithProperties('%(toolsdir)s/buildfarm/utils/wget_unpack.sh ' +
+                               baseUrl + ' logs.tar.gz '+
+                               'malloc.log sdleak.tree')
+            )]
         self.addStep(RetryingShellCommand(
-          name='get_malloc_log',
-          env=self.env,
-          workdir='.',
-          command=['wget', '-O', 'malloc.log.old',
-                   '%s/malloc.log' % baseUrl]
-          ))
-        self.addStep(RetryingShellCommand(
-          name='get_sdleak_log',
-          env=self.env,
-          workdir='.',
-          command=['wget', '-O', 'sdleak.tree.old',
-                   '%s/sdleak.tree' % baseUrl]
-          ))
+            name='get_unpack_logs',
+            env=self.env,
+            command=cmd,
+        ))
+
+#        self.addStep(RetryingShellCommand(
+#          name='get_malloc_log',
+#          env=self.env,
+#          workdir='.',
+#          command=['wget', '-O', 'malloc.log.old',
+#                   '%s/malloc.log' % baseUrl]
+#          ))
+#        self.addStep(RetryingShellCommand(
+#          name='get_sdleak_log',
+#          env=self.env,
+#          workdir='.',
+#          command=['wget', '-O', 'sdleak.tree.old',
+#                   '%s/sdleak.tree' % baseUrl]
+#          ))
+
         self.addStep(ShellCommand(
           name='mv_malloc_log',
           env=self.env,
@@ -1345,15 +1359,29 @@ class MercurialBuildFactory(MozillaBuildFactory):
                   haltOnFailure=True
                     ))
         if graphAndUpload:
+            cmd = ['/bin/bash', '-c', 
+                    WithProperties('%(toolsdir)s/buildfarm/utils/pack_scp.sh ' +
+                        'logs.tar.gz' +
+                        '"../malloc.log ../sdleak.tree"' +
+                        '%s' % self.stageUsername +
+                        '%s' % self.stageSshKey +
+                        '%s:%s/%s' % (self.stageServer, self.stageBasePath,
+                        self.logUploadDir))
+                    )]
             self.addStep(RetryingShellCommand(
-              name='upload_logs',
-              env=self.env,
-              command=['scp', '-o', 'User=%s' % self.stageUsername,
-                       '-o', 'IdentityFile=~/.ssh/%s' % self.stageSshKey,
-                       '../malloc.log', '../sdleak.tree',
-                       '%s:%s/%s' % (self.stageServer, self.stageBasePath,
-                                     self.logUploadDir)]
-              ))
+                name='pack_upload_logs',
+                env=self.env,
+                command=cmd,
+                ))
+#            self.addStep(RetryingShellCommand(
+#                name='upload_logs',
+#                env=self.env,
+#                command=['scp', '-o', 'User=%s' % self.stageUsername,
+#                    '-o', 'IdentityFile=~/.ssh/%s' % self.stageSshKey,
+#                    '../malloc.log', '../sdleak.tree',
+#                    '%s:%s/%s' % (self.stageServer, self.stageBasePath,
+#                        self.logUploadDir)]
+#                    ))
         self.addStep(ShellCommand(
           name='compare_sdleak_tree',
           env=self.env,
@@ -1634,12 +1662,26 @@ class MercurialBuildFactory(MozillaBuildFactory):
          workdir=codesighs_dir,
          sb=self.use_scratchbox,
         ))
+
+        cmd = ['/bin/bash', '-c', 
+                WithProperties('%(toolsdir)s/buildfarm/utils/wget_unpack.sh ' +
+                               self.logBaseUrl + ' codesize-auto.tar.gz '+
+                               'codesize-auto.log')
+            )]
         self.addStep(RetryingShellCommand(
-         name='get_codesize_log',
-         command=['wget', '-O', 'codesize-auto-old.log', '%s/codesize-auto.log' % self.logBaseUrl],
-         workdir='.',
-         env=self.env
+            name='get_unpack_codesize_logs',
+            env=self.env,
+            workdir='.',
+            command=cmd,
         ))
+
+#        self.addStep(RetryingShellCommand(
+#         name='get_codesize_log',
+#         command=['wget', '-O', 'codesize-auto-old.log', '%s/codesize-auto.log' % self.logBaseUrl],
+#         workdir='.',
+#         env=self.env
+#        ))
+
         if self.mozillaDir == '':
             codesighsObjdir = self.objdir
         else:
@@ -1668,15 +1710,31 @@ class MercurialBuildFactory(MozillaBuildFactory):
          command=['cat', '../codesize-auto-diff.log'],
          workdir='build%s' % self.mozillaDir
         ))
+
+        cmd = ['/bin/bash', '-c', 
+                WithProperties('%(toolsdir)s/buildfarm/utils/pack_scp.sh ' +
+                    'codesize-auto.tar.gz' +
+                    '"../codesize-auto.log"' +
+                    '%s' % self.stageUsername +
+                    '%s' % self.stageSshKey +
+                    '%s:%s/%s' % (self.stageServer, self.stageBasePath,
+                        self.logUploadDir))
+                    )]
         self.addStep(RetryingShellCommand(
-         name='upload_codesize_log',
-         command=['scp', '-o', 'User=%s' % self.stageUsername,
-          '-o', 'IdentityFile=~/.ssh/%s' % self.stageSshKey,
-          '../codesize-auto.log',
-          '%s:%s/%s' % (self.stageServer, self.stageBasePath,
-                        self.logUploadDir)],
-         workdir='build%s' % self.mozillaDir
-        ))
+            name='pack_upload_logs',
+            command=cmd,
+            workdir='build%s' % self.mozillaDir
+            ))
+
+#        self.addStep(RetryingShellCommand(
+#         name='upload_codesize_log',
+#         command=['scp', '-o', 'User=%s' % self.stageUsername,
+#          '-o', 'IdentityFile=~/.ssh/%s' % self.stageSshKey,
+#          '../codesize-auto.log',
+#          '%s:%s/%s' % (self.stageServer, self.stageBasePath,
+#                        self.logUploadDir)],
+#         workdir='build%s' % self.mozillaDir
+#        ))
 
     def addCreateSnippetsSteps(self, milestone_extra=''):
         if 'android' in self.complete_platform:

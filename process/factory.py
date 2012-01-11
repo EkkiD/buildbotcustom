@@ -1258,6 +1258,7 @@ class MercurialBuildFactory(MozillaBuildFactory):
         self.addStep(RetryingShellCommand(
             name='get_unpack_logs',
             env=self.env,
+            workdir='.',
             command=cmd,
         ))
 
@@ -1360,10 +1361,10 @@ class MercurialBuildFactory(MozillaBuildFactory):
         if graphAndUpload:
             cmd = ['/bin/bash', '-c', 
                     WithProperties('%(toolsdir)s/buildfarm/utils/pack_scp.sh ' +
-                        'logs.tar.gz' +
-                        '"../malloc.log ../sdleak.tree"' +
-                        '%s' % self.stageUsername +
-                        '%s' % self.stageSshKey +
+                        'logs.tar.gz ' +
+                        '\'../malloc.log ../sdleak.tree\' ' +
+                        '%s ' % self.stageUsername +
+                        '%s ' % self.stageSshKey +
                         '%s:%s/%s' % (self.stageServer, self.stageBasePath,
                         self.logUploadDir)) ]
             self.addStep(RetryingShellCommand(

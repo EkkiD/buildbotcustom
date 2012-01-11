@@ -1711,11 +1711,11 @@ class MercurialBuildFactory(MozillaBuildFactory):
 
         cmd = ['/bin/bash', '-c', 
                 WithProperties('%(toolsdir)s/buildfarm/utils/pack_scp.sh ' +
-                    'codesize-auto.tar.gz' +
-                    '"../codesize-auto.log"' +
-                    '%s' % self.stageUsername +
-                    '%s' % self.stageSshKey +
-                    '%s:%s/%s' % (self.stageServer, self.stageBasePath,
+                    'codesize-auto.tar.gz ' +
+                    '\'../codesize-auto.log\' ' +
+                    '%s ' % self.stageUsername +
+                    '%s ' % self.stageSshKey +
+                    '%s:%s/%s ' % (self.stageServer, self.stageBasePath,
                         self.logUploadDir)) ]
         self.addStep(RetryingShellCommand(
             name='pack_upload_logs',

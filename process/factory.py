@@ -1252,7 +1252,7 @@ class MercurialBuildFactory(MozillaBuildFactory):
 
         # Download and unpack the old versions of malloc.log and sdleak.tree
         cmd = ['/bin/bash', '-c', 
-                WithProperties('%(toolsdir)s/buildfarm/utils/wget_unpack.sh ' +
+                WithProperties('tools/buildfarm/utils/wget_unpack.sh ' +
                                baseUrl + ' logs.tar.gz '+
                                'malloc.log sdleak.tree') ]
         self.addStep(RetryingShellCommand(
@@ -1360,7 +1360,7 @@ class MercurialBuildFactory(MozillaBuildFactory):
                     ))
         if graphAndUpload:
             cmd = ['/bin/bash', '-c', 
-                    WithProperties('%(toolsdir)s/buildfarm/utils/pack_scp.sh ' +
+                    WithProperties('tools/buildfarm/utils/pack_scp.sh ' +
                         'logs.tar.gz ' + ' .. ' +
                         '\'malloc.log sdleak.tree\' ' +
                         '%s ' % self.stageUsername +
@@ -1710,7 +1710,7 @@ class MercurialBuildFactory(MozillaBuildFactory):
         ))
 
         cmd = ['/bin/bash', '-c', 
-                WithProperties('%(toolsdir)s/buildfarm/utils/pack_scp.sh ' +
+                WithProperties('tools/buildfarm/utils/pack_scp.sh ' +
                     'codesize-auto.tar.gz ' + ' .. ' +
                     '\'codesize-auto.log\' ' +
                     '%s ' % self.stageUsername +
@@ -1737,7 +1737,7 @@ class MercurialBuildFactory(MozillaBuildFactory):
         if 'android' in self.complete_platform:
             cmd = [
                 'python',
-                WithProperties('%(toolsdir)s/scripts/android/android_snippet.py'),
+                WithProperties('tools/scripts/android/android_snippet.py'),
                 '--download-base-url', self.downloadBaseURL,
                 '--download-subdir', self.downloadSubdir,
                 '--abi', self.updatePlatform,

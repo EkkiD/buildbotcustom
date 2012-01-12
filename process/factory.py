@@ -1361,8 +1361,8 @@ class MercurialBuildFactory(MozillaBuildFactory):
         if graphAndUpload:
             cmd = ['/bin/bash', '-c', 
                     WithProperties('%(toolsdir)s/buildfarm/utils/pack_scp.sh ' +
-                        'logs.tar.gz ' +
-                        '\'../malloc.log ../sdleak.tree\' ' +
+                        'logs.tar.gz ' + ' .. ' +
+                        '\'malloc.log sdleak.tree\' ' +
                         '%s ' % self.stageUsername +
                         '%s ' % self.stageSshKey +
                         '%s:%s/%s' % (self.stageServer, self.stageBasePath,
@@ -1711,8 +1711,8 @@ class MercurialBuildFactory(MozillaBuildFactory):
 
         cmd = ['/bin/bash', '-c', 
                 WithProperties('%(toolsdir)s/buildfarm/utils/pack_scp.sh ' +
-                    'codesize-auto.tar.gz ' +
-                    '\'../codesize-auto.log\' ' +
+                    'codesize-auto.tar.gz ' + ' .. ' +
+                    '\'codesize-auto.log\' ' +
                     '%s ' % self.stageUsername +
                     '%s ' % self.stageSshKey +
                     '%s:%s/%s ' % (self.stageServer, self.stageBasePath,

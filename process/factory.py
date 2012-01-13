@@ -1248,7 +1248,7 @@ class MercurialBuildFactory(MozillaBuildFactory):
           ))
 
         # Download and unpack the old versions of malloc.log and sdleak.tree
-        cmd = ['/bin/bash', '-c', 
+        cmd = ['bash', '-c', 
                 WithProperties('tools/buildfarm/utils/wget_unpack.sh ' +
                                baseUrl + ' logs.tar.gz '+
                                'malloc.log sdleak.tree') ]
@@ -1356,7 +1356,7 @@ class MercurialBuildFactory(MozillaBuildFactory):
                   haltOnFailure=True
                     ))
         if graphAndUpload:
-            cmd = ['/bin/bash', '-c', 
+            cmd = ['bash', '-c', 
                     WithProperties('../tools/buildfarm/utils/pack_scp.sh ' +
                         'logs.tar.gz ' + ' .. ' +
                         '\'malloc.log sdleak.tree\' ' +

@@ -396,12 +396,6 @@ def generateReleaseBranchObjects(releaseConfig, branchConfig,
         tag_downstream.append(builderPrefix('xulrunner_source'))
 
     for platform in releaseConfig['enUSPlatforms']:
-        builders.append(makeDummyBuilder(
-            name=builderPrefix(
-                '%s_source' % releaseConfig['productName']),
-            slaves=all_slaves,
-            category=builderPrefix(''),
-            ))
         tag_downstream.append(builderPrefix('%s_build' % platform))
         if platform in releaseConfig['notifyPlatforms']:
             notify_builders.append(builderPrefix('%s_build' % platform))
@@ -1381,7 +1375,7 @@ def generateReleaseBranchObjects(releaseConfig, branchConfig,
         )
 
         builders.append(makeDummyBuilder(
-            name=builderPrefix('final_verification'),
+            name=builderPrefix('final_verification', platform),
             slaves=all_slaves,
             category=builderPrefix(''),
             ))

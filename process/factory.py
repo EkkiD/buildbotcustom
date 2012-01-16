@@ -905,7 +905,7 @@ class MercurialBuildFactory(MozillaBuildFactory):
 
         self.addBuildSteps()
         if self.uploadSymbols or self.packageTests or self.leakTest:
-            #self.addBuildSymbolsStep()
+            self.addBuildSymbolsStep()
         if self.uploadSymbols:
             self.addUploadSymbolsStep()
         if self.uploadPackages:
@@ -988,7 +988,7 @@ class MercurialBuildFactory(MozillaBuildFactory):
         self.addPreBuildSteps()
         self.addSourceSteps()
         self.addConfigSteps()
-        #self.addDoBuildSteps()
+        self.addDoBuildSteps()
         if self.signingServers:
             self.addGetTokenSteps()
         if self.doBuildAnalysis:

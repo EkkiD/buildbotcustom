@@ -1262,21 +1262,6 @@ class MercurialBuildFactory(MozillaBuildFactory):
             command=cmd,
         ))
 
-#        self.addStep(RetryingShellCommand(
-#          name='get_malloc_log',
-#          env=self.env,
-#          workdir='.',
-#          command=['wget', '-O', 'malloc.log.old',
-#                   '%s/malloc.log' % baseUrl]
-#          ))
-#        self.addStep(RetryingShellCommand(
-#          name='get_sdleak_log',
-#          env=self.env,
-#          workdir='.',
-#          command=['wget', '-O', 'sdleak.tree.old',
-#                   '%s/sdleak.tree' % baseUrl]
-#          ))
-
         self.addStep(ShellCommand(
           name='mv_malloc_log',
           env=self.env,
@@ -1372,15 +1357,6 @@ class MercurialBuildFactory(MozillaBuildFactory):
                 env=self.env,
                 command=cmd,
                 ))
-#            self.addStep(RetryingShellCommand(
-#                name='upload_logs',
-#                env=self.env,
-#                command=['scp', '-o', 'User=%s' % self.stageUsername,
-#                    '-o', 'IdentityFile=~/.ssh/%s' % self.stageSshKey,
-#                    '../malloc.log', '../sdleak.tree',
-#                    '%s:%s/%s' % (self.stageServer, self.stageBasePath,
-#                        self.logUploadDir)]
-#                    ))
         self.addStep(ShellCommand(
           name='compare_sdleak_tree',
           env=self.env,
@@ -1673,13 +1649,6 @@ class MercurialBuildFactory(MozillaBuildFactory):
             command=cmd,
         ))
 
-#        self.addStep(RetryingShellCommand(
-#         name='get_codesize_log',
-#         command=['wget', '-O', 'codesize-auto-old.log', '%s/codesize-auto.log' % self.logBaseUrl],
-#         workdir='.',
-#         env=self.env
-#        ))
-
         if self.mozillaDir == '':
             codesighsObjdir = self.objdir
         else:
@@ -1722,16 +1691,6 @@ class MercurialBuildFactory(MozillaBuildFactory):
             command=cmd,
             workdir='build%s' % self.mozillaDir
             ))
-
-#        self.addStep(RetryingShellCommand(
-#         name='upload_codesize_log',
-#         command=['scp', '-o', 'User=%s' % self.stageUsername,
-#          '-o', 'IdentityFile=~/.ssh/%s' % self.stageSshKey,
-#          '../codesize-auto.log',
-#          '%s:%s/%s' % (self.stageServer, self.stageBasePath,
-#                        self.logUploadDir)],
-#         workdir='build%s' % self.mozillaDir
-#        ))
 
     def addCreateSnippetsSteps(self, milestone_extra=''):
         if 'android' in self.complete_platform:

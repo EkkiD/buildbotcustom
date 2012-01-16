@@ -263,7 +263,7 @@ def generateReleaseBranchObjects(releaseConfig, branchConfig,
     test_builders = []
     schedulers = []
     change_source = []
-    notify_builders = []
+    important_builders = []
     status = []
 
     ##### Change sources and Schedulers
@@ -399,7 +399,7 @@ def generateReleaseBranchObjects(releaseConfig, branchConfig,
     for platform in releaseConfig['enUSPlatforms']:
         tag_downstream.append(builderPrefix('%s_build' % platform))
         if platform in releaseConfig['notifyPlatforms']:
-            notify_builders.append(builderPrefix('%s_build' % platform))
+            important_builders.append(builderPrefix('%s_build' % platform))
         if platform in releaseConfig['l10nPlatforms']:
             repack_scheduler = Triggerable(
                 name=builderPrefix('%s_repack' % platform),
@@ -453,7 +453,7 @@ def generateReleaseBranchObjects(releaseConfig, branchConfig,
             builderNames=[builderPrefix('updates')]
         )
         schedulers.append(updates_scheduler)
-        notify_builders.append(builderPrefix('updates'))
+        important_builders.append(builderPrefix('updates'))
 
         updateBuilderNames = []
         for platform in sorted(releaseConfig.get('verifyConfigs', {}).keys()):
@@ -1290,14 +1290,14 @@ def generateReleaseBranchObjects(releaseConfig, branchConfig,
             slaves=all_slaves,
             category=builderPrefix(''),
             ))
-        notify_builders.append(builderPrefix('ready_for_releasetest_testing'))
+        important_builders.append(builderPrefix('ready_for_releasetest_testing'))
 
         builders.append(makeDummyBuilder(
             name=builderPrefix('ready_for_release'),
             slaves=all_slaves,
             category=builderPrefix(''),
             ))
-        notify_builders.append(builderPrefix('ready_for_release'))
+        important_builders.append(builderPrefix('ready_for_release'))
 
     if releaseConfig.get('majorUpdateRepoPath'):
         # Not attached to any Scheduler
@@ -1354,7 +1354,7 @@ def generateReleaseBranchObjects(releaseConfig, branchConfig,
             'env': builder_env,
             'properties': {'slavebuilddir': reallyShort(builderPrefix('mu'))}
         })
-        notify_builders.append(builderPrefix('major_update'))
+        important_builders.append(builderPrefix('major_update'))
 
         for platform in sorted(releaseConfig['majorUpdateVerifyConfigs'].keys()):
             for n, builderName in majorUpdateVerifyBuilders(platform).iteritems():
@@ -1534,7 +1534,7 @@ def generateReleaseBranchObjects(releaseConfig, branchConfig,
             sendToInterestedUsers=False,
             extraRecipients=releaseConfig['ImportantRecipients'],
             mode='passing',
-            builders=notify_builders,
+            builders=important_builders,
             relayhost='mail.build.mozilla.org',
             messageFormatter=createReleaseMessage,
         ))

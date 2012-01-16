@@ -1467,7 +1467,7 @@ def generateReleaseBranchObjects(releaseConfig, branchConfig,
                               '/tools/buildbot/bin', '/usr/kerberos/bin',
                               '/usr/local/bin', '/bin', '/usr/bin',
                               '/home/cltbld/bin')))
-            signature_verification_factory = ScriptFactory(
+        signature_verification_factory = ScriptFactory(
             scriptRepo=tools_repo,
             scriptName='release/signing/verify-android-signature.sh',
             extra_args=['--tools-dir=scripts/', '--release',

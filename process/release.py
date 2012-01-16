@@ -398,7 +398,8 @@ def generateReleaseBranchObjects(releaseConfig, branchConfig,
 
     for platform in releaseConfig['enUSPlatforms']:
         tag_downstream.append(builderPrefix('%s_build' % platform))
-        notify_builders.append(builderPrefix('%s_build' % platform))
+        if platform in releaseConfig['notifyPlatforms']:
+            notify_builders.append(builderPrefix('%s_build' % platform))
         if platform in releaseConfig['l10nPlatforms']:
             repack_scheduler = Triggerable(
                 name=builderPrefix('%s_repack' % platform),
@@ -411,7 +412,6 @@ def generateReleaseBranchObjects(releaseConfig, branchConfig,
                 builderNames=[builderPrefix('repack_complete', platform),]
             )
             schedulers.append(repack_complete_scheduler)
-            notify_builders.append(builderPrefix('repack_complete', platform))
 
     for platform in releaseConfig.get('xulrunnerPlatforms', []):
         tag_downstream.append(builderPrefix('xulrunner_%s_build' % platform))
@@ -673,7 +673,6 @@ def generateReleaseBranchObjects(releaseConfig, branchConfig,
                 'release_config': releaseConfigFile,
             }
         })
-        notify_builders.append(builderPrefix('%s_tag' % releaseConfig['productName']))
     else:
         builders.append(makeDummyBuilder(
             name=builderPrefix('%s_tag' % releaseConfig['productName']),
@@ -1003,8 +1002,6 @@ def generateReleaseBranchObjects(releaseConfig, branchConfig,
                 'properties': {'slavebuilddir':
                     reallyShort(builderPrefix('xulrunner_%s_build' % platform))}
             })
-            notify_builders.append(
-                builderPrefix('xulrunner_%s_build' % platform))
         else:
             builders.append(makeDummyBuilder(
                 name=builderPrefix('xulrunner_%s_build' % platform),
@@ -1263,7 +1260,6 @@ def generateReleaseBranchObjects(releaseConfig, branchConfig,
                 'script_repo_revision': releaseTag,
                 },
         })
-        notify_builders.append(builderPrefix('push_to_mirrors'))
 
     for platform in releaseConfig.get('verifyConfigs', {}).keys():
         final_verification_factory = ReleaseFinalVerification(
@@ -1471,7 +1467,7 @@ def generateReleaseBranchObjects(releaseConfig, branchConfig,
                               '/tools/buildbot/bin', '/usr/kerberos/bin',
                               '/usr/local/bin', '/bin', '/usr/bin',
                               '/home/cltbld/bin')))
-        signature_verification_factory = ScriptFactory(
+            signature_verification_factory = ScriptFactory(
             scriptRepo=tools_repo,
             scriptName='release/signing/verify-android-signature.sh',
             extra_args=['--tools-dir=scripts/', '--release',
@@ -1495,7 +1491,7 @@ def generateReleaseBranchObjects(releaseConfig, branchConfig,
     # messages in this case. See Bug 635527 for the details.
     tagging_started_recipients = releaseConfig['AllRecipients'][:]
     if not releaseConfig.get('skip_tag'):
-        tagging_started_recipients.extend(releaseConfig['PassRecipients'])
+        tagging_started_recipients.extend(releaseConfig['ImportantRecipients'])
     for recipient in tagging_started_recipients:
         #send a message when we receive the sendchange and start tagging
         status.append(ChangeNotifier(
@@ -1508,8 +1504,7 @@ def generateReleaseBranchObjects(releaseConfig, branchConfig,
                 changeIsImportant=lambda c: \
                 changeContainsProduct(c, releaseConfig['productName'])
             ))
-    for recipient in releaseConfig['AllRecipients'] + \
-                     releaseConfig['PassRecipients']:
+    for recipient in releaseConfig['AllRecipients']:
         if releaseConfig['productName'] == 'firefox':
             #send a message when signing is complete
             status.append(ChangeNotifier(
@@ -1537,7 +1532,7 @@ def generateReleaseBranchObjects(releaseConfig, branchConfig,
     status.append(MailNotifier(
             fromaddr='release@mozilla.com',
             sendToInterestedUsers=False,
-            extraRecipients=releaseConfig['PassRecipients'],
+            extraRecipients=releaseConfig['ImportantRecipients'],
             mode='passing',
             builders=notify_builders,
             relayhost='mail.build.mozilla.org',

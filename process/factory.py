@@ -1256,7 +1256,7 @@ class MercurialBuildFactory(MozillaBuildFactory):
                                baseUrl + ' logs.tar.gz '+
                                'malloc.log:malloc.log.old sdleak.tree:malloc.log.old') ]
         self.addStep(RetryingShellCommand(
-            name='get_unpack_logs',
+            name='get_logs',
             env=self.env,
             workdir='.',
             command=cmd,
@@ -1353,7 +1353,7 @@ class MercurialBuildFactory(MozillaBuildFactory):
                         '%s:%s/%s' % (self.stageServer, self.stageBasePath,
                         self.logUploadDir)) ]
             self.addStep(RetryingShellCommand(
-                name='pack_upload_logs',
+                name='upload_logs',
                 env=self.env,
                 command=cmd,
                 ))
@@ -1643,7 +1643,7 @@ class MercurialBuildFactory(MozillaBuildFactory):
                                self.logBaseUrl + ' codesize-auto.tar.gz '+
                                'codesize-auto.log:codesize-auto.log.old') ]
         self.addStep(RetryingShellCommand(
-            name='get_unpack_codesize_logs',
+            name='get_codesize_logs',
             env=self.env,
             workdir='.',
             command=cmd,
@@ -1687,7 +1687,7 @@ class MercurialBuildFactory(MozillaBuildFactory):
                     '%s:%s/%s ' % (self.stageServer, self.stageBasePath,
                         self.logUploadDir)) ]
         self.addStep(RetryingShellCommand(
-            name='pack_upload_logs',
+            name='upload_codesize_logs',
             command=cmd,
             workdir='build%s' % self.mozillaDir
             ))

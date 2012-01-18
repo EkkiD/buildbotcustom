@@ -1254,7 +1254,7 @@ class MercurialBuildFactory(MozillaBuildFactory):
         cmd = ['/bin/bash', '-c', 
                 WithProperties('tools/buildfarm/utils/wget_unpack.sh ' +
                                baseUrl + ' logs.tar.gz '+
-                               'malloc.log sdleak.tree') ]
+                               'malloc.log:malloc.log.old sdleak.tree:malloc.log.old') ]
         self.addStep(RetryingShellCommand(
             name='get_unpack_logs',
             env=self.env,
@@ -1641,7 +1641,7 @@ class MercurialBuildFactory(MozillaBuildFactory):
         cmd = ['/bin/bash', '-c', 
                 WithProperties('%(toolsdir)s/buildfarm/utils/wget_unpack.sh ' +
                                self.logBaseUrl + ' codesize-auto.tar.gz '+
-                               'codesize-auto.log') ]
+                               'codesize-auto.log:codesize-auto.log.old') ]
         self.addStep(RetryingShellCommand(
             name='get_unpack_codesize_logs',
             env=self.env,

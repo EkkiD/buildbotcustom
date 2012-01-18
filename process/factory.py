@@ -1255,7 +1255,7 @@ class MercurialBuildFactory(MozillaBuildFactory):
                 WithProperties('tools/buildfarm/utils/wget_unpack.sh ' +
                                baseUrl + ' logs.tar.gz '+
                                'malloc.log:malloc.log.old sdleak.tree:malloc.log.old') ]
-        self.addStep(RetryingShellCommand(
+        self.addStep(ShellCommand(
             name='get_logs',
             env=self.env,
             workdir='.',
@@ -1352,7 +1352,7 @@ class MercurialBuildFactory(MozillaBuildFactory):
                         '%s ' % self.stageSshKey +
                         '%s:%s/%s' % (self.stageServer, self.stageBasePath,
                         self.logUploadDir)) ]
-            self.addStep(RetryingShellCommand(
+            self.addStep(ShellCommand(
                 name='upload_logs',
                 env=self.env,
                 command=cmd,
@@ -1642,7 +1642,7 @@ class MercurialBuildFactory(MozillaBuildFactory):
                 WithProperties('%(toolsdir)s/buildfarm/utils/wget_unpack.sh ' +
                                self.logBaseUrl + ' codesize-auto.tar.gz '+
                                'codesize-auto.log:codesize-auto.log.old') ]
-        self.addStep(RetryingShellCommand(
+        self.addStep(ShellCommand(
             name='get_codesize_logs',
             env=self.env,
             workdir='.',
@@ -1686,7 +1686,7 @@ class MercurialBuildFactory(MozillaBuildFactory):
                     '%s ' % self.stageSshKey +
                     '%s:%s/%s ' % (self.stageServer, self.stageBasePath,
                         self.logUploadDir)) ]
-        self.addStep(RetryingShellCommand(
+        self.addStep(ShellCommand(
             name='upload_codesize_logs',
             command=cmd,
             workdir='build%s' % self.mozillaDir

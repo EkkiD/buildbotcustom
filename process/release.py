@@ -965,7 +965,7 @@ def generateReleaseBranchObjects(releaseConfig, branchConfig,
             'properties': {'slavebuilddir': reallyShort(builderPrefix('updates'))}
         })
         post_signing_builders.append(builderPrefix('updates'))
-        notify_builders.append(builderPrefix('updates'))
+        important_builders.append(builderPrefix('updates'))
         if not releaseConfig.get('enableSigningAtBuildTime', True) or \
            not releaseConfig.get('enablePartialMarsAtBuildTime', True):
             deliverables_builders.append(builderPrefix('updates'))
@@ -976,7 +976,7 @@ def generateReleaseBranchObjects(releaseConfig, branchConfig,
             category=builderPrefix('')
         ))
         post_signing_builders.append(builderPrefix('updates'))
-        notify_builders.append(builderPrefix('updates'))
+        important_builders.append(builderPrefix('updates'))
 
 
     for platform in sorted(releaseConfig.get('verifyConfigs', {}).keys()):
@@ -1338,7 +1338,7 @@ def generateReleaseBranchObjects(releaseConfig, branchConfig,
             builderNames=[builderPrefix('signing_done')]
         )
         schedulers.append(signing_done_scheduler)
-        notify_builders.append(builderPrefix('signing_done'))
+        important_builders.append(builderPrefix('signing_done'))
 
     if releaseConfig['productName'] == 'fennec':
         locale = 'en-US'
@@ -1432,7 +1432,8 @@ def generateReleaseBranchObjects(releaseConfig, branchConfig,
 
     for platform in releaseConfig['enUSPlatforms']:
         tag_downstream.append(builderPrefix('%s_build' % platform))
-        notify_builders.append(builderPrefix('%s_build' % platform))
+        if platform in releaseConfig['notifyPlatforms']:
+            important_builders.append(builderPrefix('%s_build' % platform))
         if platform in releaseConfig['l10nPlatforms']:
             repack_scheduler = Triggerable(
                 name=builderPrefix('%s_repack' % platform),
@@ -1445,7 +1446,6 @@ def generateReleaseBranchObjects(releaseConfig, branchConfig,
                 builderNames=[builderPrefix('repack_complete', platform),]
             )
             schedulers.append(repack_complete_scheduler)
-            notify_builders.append(builderPrefix('repack_complete', platform))
 
     for platform in releaseConfig.get('xulrunnerPlatforms', []):
         tag_downstream.append(builderPrefix('xulrunner_%s_build' % platform))

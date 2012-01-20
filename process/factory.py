@@ -1357,11 +1357,13 @@ class MercurialBuildFactory(MozillaBuildFactory):
             cmd = ['bash', '-c', 
                     WithProperties('../tools/buildfarm/utils/pack_scp.sh ' +
                         'logs.tar.gz ' + ' .. ' +
-                        '\'malloc.log sdleak.tree\' ' +
                         '%s ' % self.stageUsername +
                         '%s ' % self.stageSshKey +
-                        '%s:/%s/%s' % (self.stageServer, self.stageBasePath,
-                        self.logUploadDir)) ]
+                        # Notice the '/' after the ':'. This prevents windows from trying to modify
+                        # the path
+                        '%s:/%s/%s ' % (self.stageServer, self.stageBasePath,
+                        self.logUploadDir)) +
+                        'malloc.log sdleak.tree' ]
             self.addStep(ShellCommand(
                 name='upload_logs',
                 env=self.env,
@@ -1691,11 +1693,13 @@ class MercurialBuildFactory(MozillaBuildFactory):
         cmd = ['/bin/bash', '-c', 
                 WithProperties('../tools/buildfarm/utils/pack_scp.sh ' +
                     'codesize-auto.tar.gz ' + ' .. ' +
-                    '\'codesize-auto.log\' ' +
                     '%s ' % self.stageUsername +
                     '%s ' % self.stageSshKey +
-                    '%s:%s/%s ' % (self.stageServer, self.stageBasePath,
-                        self.logUploadDir)) ]
+                    # Notice the '/' after the ':'. This prevents windows from trying to modify
+                    # the path
+                    '%s:/%s/%s ' % (self.stageServer, self.stageBasePath,
+                        self.logUploadDir)) +
+                    'codesize-auto.log' ]
         self.addStep(ShellCommand(
             name='upload_codesize_logs',
             command=cmd,

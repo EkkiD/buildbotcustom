@@ -1360,7 +1360,7 @@ class MercurialBuildFactory(MozillaBuildFactory):
                         '\'malloc.log sdleak.tree\' ' +
                         '%s ' % self.stageUsername +
                         '%s ' % self.stageSshKey +
-                        '%s:%s/%s' % (self.stageServer, self.stageBasePath,
+                        '%s:/%s/%s' % (self.stageServer, self.stageBasePath,
                         self.logUploadDir)) ]
             self.addStep(ShellCommand(
                 name='upload_logs',

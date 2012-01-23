@@ -63,7 +63,6 @@ from buildbotcustom.steps.release import UpdateVerify, L10nVerifyMetaDiff, \
 from buildbotcustom.steps.source import MercurialCloneCommand
 from buildbotcustom.steps.test import AliveTest, \
   CompareLeakLogs, Codesighs, GraphServerPost
-from buildbotcustom.steps.transfer import MozillaStageUpload
 from buildbotcustom.steps.updates import CreateCompleteUpdateSnippet, \
   CreatePartialUpdateSnippet
 from buildbotcustom.steps.signing import SigningServerAuthenication
@@ -512,7 +511,8 @@ class MozillaBuildFactory(RequestSortingBuildFactory):
              workdir='.',
              timeout=3600, # One hour, because Windows is slow
              extract_fn=parse_purge_builds,
-             log_eval_func=lambda c,s: regex_log_evaluator(c, s, purge_error)
+             log_eval_func=lambda c,s: regex_log_evaluator(c, s, purge_error),
+             env=self.env,
             ))
 
     def addPeriodicRebootSteps(self):
@@ -1232,11 +1232,13 @@ class MercurialBuildFactory(MozillaBuildFactory):
             if self.graphServer:
                 self.addBuildInfoSteps()
                 self.addStep(JSONPropertiesDownload(slavedest="properties.json"))
+                gs_env = self.env.copy()
+                gs_env['PYTHONPATH'] = WithProperties('%(toolsdir)s/lib/python')
                 self.addStep(GraphServerPost(server=self.graphServer,
                                              selector=self.graphSelector,
                                              branch=self.graphBranch,
                                              resultsname=self.baseName,
-                                             env={'PYTHONPATH': [WithProperties('%(toolsdir)s/lib/python')]},
+                                             env=gs_env,
                                              propertiesFile="properties.json"))
             else:
                 self.addStep(OutputStep(
@@ -1298,13 +1300,15 @@ class MercurialBuildFactory(MozillaBuildFactory):
           haltOnFailure=True
           ))
         if self.graphServer and graphAndUpload:
+            gs_env = self.env.copy()
+            gs_env['PYTHONPATH'] = WithProperties('%(toolsdir)s/lib/python')
             self.addBuildInfoSteps()
             self.addStep(JSONPropertiesDownload(slavedest="properties.json"))
             self.addStep(GraphServerPost(server=self.graphServer,
                                          selector=self.graphSelector,
                                          branch=self.graphBranch,
                                          resultsname=self.baseName,
-                                         env={'PYTHONPATH': [WithProperties('%(toolsdir)s/lib/python')]},
+                                         env=gs_env,
                                          propertiesFile="properties.json"))
         self.addStep(CompareLeakLogs(
           name='compare_previous_leak_log',
@@ -1357,11 +1361,13 @@ class MercurialBuildFactory(MozillaBuildFactory):
             cmd = ['bash', '-c', 
                     WithProperties('../tools/buildfarm/utils/pack_scp.sh ' +
                         'logs.tar.gz ' + ' .. ' +
-                        '\'malloc.log sdleak.tree\' ' +
                         '%s ' % self.stageUsername +
                         '%s ' % self.stageSshKey +
-                        '%s:%s/%s' % (self.stageServer, self.stageBasePath,
-                        self.logUploadDir)) ]
+                        # Notice the '/' after the ':'. This prevents windows from trying to modify
+                        # the path
+                        '%s:/%s/%s ' % (self.stageServer, self.stageBasePath,
+                        self.logUploadDir) +
+                        'malloc.log sdleak.tree') ]
             self.addStep(ShellCommand(
                 name='upload_logs',
                 env=self.env,
@@ -1674,13 +1680,15 @@ class MercurialBuildFactory(MozillaBuildFactory):
         ))
 
         if self.graphServer:
+            gs_env = self.env.copy()
+            gs_env['PYTHONPATH'] = WithProperties('%(toolsdir)s/lib/python')
             self.addBuildInfoSteps()
             self.addStep(JSONPropertiesDownload(slavedest="properties.json"))
             self.addStep(GraphServerPost(server=self.graphServer,
                                          selector=self.graphSelector,
                                          branch=self.graphBranch,
                                          resultsname=self.baseName,
-                                         env={'PYTHONPATH': [WithProperties('%(toolsdir)s/lib/python')]},
+                                         env=gs_env,
                                          propertiesFile="properties.json"))
         self.addStep(ShellCommand(
          name='echo_codesize_log',
@@ -1691,11 +1699,13 @@ class MercurialBuildFactory(MozillaBuildFactory):
         cmd = ['/bin/bash', '-c', 
                 WithProperties('../tools/buildfarm/utils/pack_scp.sh ' +
                     'codesize-auto.tar.gz ' + ' .. ' +
-                    '\'codesize-auto.log\' ' +
                     '%s ' % self.stageUsername +
                     '%s ' % self.stageSshKey +
-                    '%s:%s/%s ' % (self.stageServer, self.stageBasePath,
-                        self.logUploadDir)) ]
+                    # Notice the '/' after the ':'. This prevents windows from trying to modify
+                    # the path
+                    '%s:/%s/%s ' % (self.stageServer, self.stageBasePath,
+                        self.logUploadDir) +
+                    'codesize-auto.log') ]
         self.addStep(ShellCommand(
             name='upload_codesize_logs',
             command=cmd,
